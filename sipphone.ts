@@ -111,6 +111,20 @@ class sipphone {
     }
   }
 
+  /**
+   * @description: SDP modifiers
+   * @param {type}
+   * @return:
+   */
+  private generateModifiers() {
+    const myModifier = (description: RTCSessionDescriptionInit) => {
+      description.sdp = (description as RTCSessionDescription).sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1/img, 'a=fmtp:111 ptime=20;useinbandfec=1;maxplaybackrate=30000;sprop-maxcapturerate=24000;maxaveragebitrate=30000;usedtx=1');
+      return Promise.resolve(description);
+    };
+
+    const modifierArray = [myModifier, SIP.Web.Modifiers.stripTelephoneEvent];
+    return modifierArray;
+  }
 
   /**
    * 呼叫其他用户
@@ -120,8 +134,6 @@ class sipphone {
   // 如果是视频
   const video = (mediaType === 'video');
   this.setCurrentSessionParams({ video });
-  // descriptionModifier
-  // const modifierArray = this.getModifier()
 
   // uri
   const uri = new SIP.URI('', number, this.sipServers[0].server);
@@ -131,6 +143,8 @@ class sipphone {
     uri.setParam('matrix_conference_pin', password);
   }
 
+  // descriptionModifier
+  const modifiers = this.generateModifiers();
   // 呼叫其他用户，并返回该通话的session
   this.currentSession = this.SipUA.invite(uri, this.SessionParams);
   // 绑定当前session
