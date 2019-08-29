@@ -1,9 +1,9 @@
 /*
  * @Description: 
  * @Author: lushevol
- * @Date: 2019-08-27 17:53:58
+ * @Date: 2019-08-27 17:53:42
  * @LastEditors: lushevol
- * @LastEditTime: 2019-08-27 17:55:13
+ * @LastEditTime: 2019-08-29 18:05:38
  */
 import SIP from 'sip.js'
 
@@ -28,13 +28,19 @@ interface ICallbackObj {
 }
 
 interface IErrorMsg {
-  message: string, 
-  messageType: string, 
-  reason: string, 
-  code: string 
+  message: string,
+  messageType: string,
+  reason: string,
+  code: string
+}
+
+interface IMediaDom {
+  remoteAudio?: HTMLAudioElement,
+  remoteVideo?: HTMLVideoElement,
+  localVideo?: HTMLVideoElement
 }
 
 type OutgoingSession = SIP.ClientContext;
 type IncomingSession = SIP.ServerContext;
 
-export { IWS, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession }
+export { IWS, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom }
