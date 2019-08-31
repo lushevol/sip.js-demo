@@ -3,7 +3,7 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:42
  * @LastEditors: lushevol
- * @LastEditTime: 2019-08-29 18:05:38
+ * @LastEditTime: 2019-08-31 20:34:01
  */
 import SIP from 'sip.js'
 
@@ -38,6 +38,10 @@ interface IMediaDom {
   remoteAudio?: HTMLAudioElement,
   remoteVideo?: HTMLVideoElement,
   localVideo?: HTMLVideoElement
+}
+
+interface IModifiers {
+  ptime: string
 }
 
 type OutgoingSession = SIP.ClientContext;

@@ -3,10 +3,10 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:38
  * @LastEditors: lushevol
- * @LastEditTime: 2019-08-29 18:12:56
+ * @LastEditTime: 2019-08-31 20:35:31
  */
 import SIP, { Transport } from 'sip.js'
-import { IWS, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom } from './sipphone.declar'
+import { IWS, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
 
 class sipphone {
   public sipServers: IWS[] = [];
@@ -124,9 +124,9 @@ class sipphone {
    * @param {type}
    * @return:
    */
-  private generateModifiers() {
+  private generateModifiers(modifiers: IModifiers = { ptime: '20' }) {
     const myModifier = (description: RTCSessionDescriptionInit) => {
-      description.sdp = (description as RTCSessionDescription).sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1/img, 'a=fmtp:111 ptime=20;useinbandfec=1;maxplaybackrate=30000;sprop-maxcapturerate=24000;maxaveragebitrate=30000;usedtx=1');
+      description.sdp = (description as RTCSessionDescription).sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1/img, `a=fmtp:111 ptime=${modifiers.ptime}; useinbandfec=1; maxplaybackrate=30000; sprop-maxcapturerate=24000; maxaveragebitrate=30000; usedtx=1`);
       return Promise.resolve(description);
     };
 
