@@ -3,7 +3,7 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:38
  * @LastEditors: lushevol
- * @LastEditTime: 2019-08-31 20:35:31
+ * @LastEditTime: 2019-09-01 22:08:50
  */
 import SIP, { Transport } from 'sip.js'
 import { IWS, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
@@ -124,9 +124,9 @@ class sipphone {
    * @param {type}
    * @return:
    */
-  private generateModifiers(modifiers: IModifiers = { ptime: '20' }) {
+  private generateModifiers(modifiers: IModifiers = { ptime: '20', capturerate: '24000', bitrate: '30000' }) {
     const myModifier = (description: RTCSessionDescriptionInit) => {
-      description.sdp = (description as RTCSessionDescription).sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1/img, `a=fmtp:111 ptime=${modifiers.ptime}; useinbandfec=1; maxplaybackrate=30000; sprop-maxcapturerate=24000; maxaveragebitrate=30000; usedtx=1`);
+      description.sdp = (description as RTCSessionDescription).sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1/img, `a=fmtp:111 ptime=${modifiers.ptime}; useinbandfec=1; maxplaybackrate=${modifiers.bitrate}; sprop-maxcapturerate=${modifiers.capturerate}; maxaveragebitrate=${modifiers.bitrate}; usedtx=1`);
       return Promise.resolve(description);
     };
 

@@ -3,7 +3,7 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:42
  * @LastEditors: lushevol
- * @LastEditTime: 2019-08-31 20:34:01
+ * @LastEditTime: 2019-09-01 22:07:30
  */
 import SIP from 'sip.js'
 
@@ -41,7 +41,9 @@ interface IMediaDom {
 }
 
 interface IModifiers {
-  ptime: string
+  ptime: string,
+  bitrate: string,
+  capturerate: string
 }
 
 type OutgoingSession = SIP.ClientContext;
