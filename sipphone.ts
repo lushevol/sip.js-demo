@@ -3,7 +3,7 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:38
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-01 22:08:50
+ * @LastEditTime: 2019-09-02 22:15:42
  */
 import SIP, { Transport } from 'sip.js'
 import { IWS, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
@@ -24,6 +24,7 @@ class sipphone {
   private videoTrack: MediaStreamTrack[] = [];
   public callback: ICallbackObj = {};
   public mediaDom!: IMediaDom;
+  public modifiersParams: IModifiers = { ptime: '20', capturerate: '24000', bitrate: '30000' };
 
   constructor(account: ISipAccount, server: IWS[]) {
     this.sipAccount = account
@@ -151,7 +152,7 @@ class sipphone {
       uri.setParam('matrix_conference_pin', password)
     }
     // descriptionModifier
-    const modifiers = this.generateModifiers();
+    const modifiers = this.generateModifiers(this.modifiersParams);
     // 呼叫其他用户，并返回该通话的session
     this.currentSession = this.SipUA.invite(uri, this.SessionParams)
     // 绑定当前session
