@@ -3,13 +3,13 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:38
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-02 22:15:42
+ * @LastEditTime: 2019-09-06 17:23:40
  */
 import SIP, { Transport } from 'sip.js'
-import { IWS, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
+import { ISipAddress, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
 
 class sipphone {
-  public sipServers: IWS[] = [];
+  public sipServers: ISipAddress[] = [];
   public sipAccount: ISipAccount = {
     name: 'unkown user',
     no: '',
@@ -26,7 +26,7 @@ class sipphone {
   public mediaDom!: IMediaDom;
   public modifiersParams: IModifiers = { ptime: '20', capturerate: '24000', bitrate: '30000' };
 
-  constructor(account: ISipAccount, server: IWS[]) {
+  constructor(account: ISipAccount, server: ISipAddress[]) {
     this.sipAccount = account
     this.sipServers = server
     this.registCallbacks()
@@ -137,9 +137,9 @@ class sipphone {
 
   /**
    * 呼叫其他用户
-   * @params: number 用户号码
+   * @params: number 用户号码, mediaType 媒体类型（audio音频/video视频）
   */
-  invite(number: string, mediaType: string, password: string) {
+  invite(number: string, mediaType: string = 'audio', password?: string) {
   // 如果是视频
     const video = (mediaType === 'video')
     this.setCurrentSessionParams({ video })

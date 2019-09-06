@@ -3,11 +3,11 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:42
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-01 22:07:30
+ * @LastEditTime: 2019-09-06 17:14:23
  */
 import SIP from 'sip.js'
 
-interface IWS {
+interface ISipAddress {
   protocol: string,
   server: string,
   port: number
@@ -49,4 +49,4 @@ interface IModifiers {
 type OutgoingSession = SIP.ClientContext;
 type IncomingSession = SIP.ServerContext;
 
-export { IWS, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom }
+export { ISipAddress, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers }
