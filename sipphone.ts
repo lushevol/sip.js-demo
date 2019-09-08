@@ -3,7 +3,7 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:38
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-06 17:23:40
+ * @LastEditTime: 2019-09-08 22:09:15
  */
 import SIP, { Transport } from 'sip.js'
 import { ISipAddress, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
@@ -414,6 +414,7 @@ class sipphone {
 
   /**
    * 全部回调
+   * TODO: 做成订阅/发布
   */
   registCallbacks() {
     this.callback.login = function() {

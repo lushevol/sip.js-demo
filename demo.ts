@@ -3,7 +3,7 @@
  * @Author: lushevol
  * @Date: 2019-09-06 17:11:30
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-07 23:00:14
+ * @LastEditTime: 2019-09-08 22:10:19
  */
 import { sipphone } from "./sipphone";
 import { ISipAddress, ISipAccount, IMediaDom } from "./sipphone.declar";
@@ -30,15 +30,15 @@ const SIPPHONE = new sipphone(account, servers)
 
 const UA = SIPPHONE.init(MD)
 
-UA.callback.callIn = () => {
+UA.on('callIn', () => {
   // triggerd when someone is calling you
-}
+})
 
 // call someone whos number is 1235
-UA.callback.accepted = () => {
+UA.on('accepted', () => {
   // triggerd when your call is accepted by peer
-}
-UA.callback.hungup = () => {
+})
+UA.on('hungup', () => {
   // triggerd when call is finished
-}
+})
 UA.invite(1235)
