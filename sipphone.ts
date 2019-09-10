@@ -3,10 +3,11 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:38
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-08 22:09:15
+ * @LastEditTime: 2019-09-10 09:20:15
  */
 import SIP, { Transport } from 'sip.js'
 import { ISipAddress, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
+import { EventEmitter } from "./EventEmitter";
 
 class sipphone {
   public sipServers: ISipAddress[] = [];
@@ -25,11 +26,14 @@ class sipphone {
   public callback: ICallbackObj = {};
   public mediaDom!: IMediaDom;
   public modifiersParams: IModifiers = { ptime: '20', capturerate: '24000', bitrate: '30000' };
+  public EventEmitter = new EventEmitter()
+  public on = this.EventEmitter.on
+  public emit = this.EventEmitter.emit
 
   constructor(account: ISipAccount, server: ISipAddress[]) {
     this.sipAccount = account
     this.sipServers = server
-    this.registCallbacks()
+    this.registerDefaultEvents()
   }
 
   // initial sip instance
@@ -114,9 +118,9 @@ class sipphone {
     this.setParamsBySessionMediaType(this.currentSession)
     this.bindIncomingCallSessionEvent(this.currentSession)
     if (this.isIncomingCallFromInternal(this.currentSession)) {
-      this.callback.callIn(this.currentSession)
+      this.emit('callIn', this.currentSession)
     } else {
-      this.callback.callBack(this.currentSession)
+      this.emit('callBack', this.currentSession)
     }
   }
 
@@ -158,7 +162,7 @@ class sipphone {
     // 绑定当前session
     this.bindOutgoingCallSessionEvent(this.currentSession as OutgoingSession)
     // 呼出回调
-    this.callback.callOut()
+    this.emit('callOut')
   }
 
   // is this coming call from internal (means outcall 's callback)
@@ -179,33 +183,33 @@ class sipphone {
     // 同意通话时
     session.on('accepted', (response: SIP.IncomingResponse, cause: string) => {
       console.log(`[sipcall] session accepted \n ${response} ${cause}`)
-      this.callback.accepted()
+      this.emit('accepted')
     })
 
     // 被拒绝时
     // Fired each time an unsuccessful final (300-699) response is received. Note: This will also emit a failed event, followed by a terminated event.
     session.on('rejected', (response: SIP.IncomingResponse, cause: string) => {
       console.log(`[sipcall] session rejected ${response} ${cause}`)
-      this.callback.stopTracks()
+      this.emit('stopTracks')
       // 被动挂断
-      this.callback.hungup()
-      this.callback.callEnd()
+      this.emit('hungup')
+      this.emit('callEnd')
     })
 
     // 被拒绝时
     // Fired each time an unsuccessful final (300-699) response is received. Note: This will also emit a failed event, followed by a terminated event.
     session.on('rejected', (response: SIP.IncomingResponse, cause: string) => {
       console.log(`[sipcall] session rejected ${response} ${cause}`)
-      this.callback.stopTracks()
+      this.emit('stopTracks')
       // 被动挂断
-      this.callback.hungup()
-      this.callback.callEnd()
+      this.emit('hungup')
+      this.emit('callEnd')
     })
 
     session.on('failed', (response: SIP.IncomingResponse, cause: string) => {
       console.log('[sipcall debug]', response)
       const error = this.parseError(response)
-      this.callback.error(error)
+      this.emit('error', error)
     })
   }
 
@@ -214,25 +218,25 @@ class sipphone {
     // 被结束时
     session.on('bye', (request: SIP.IncomingRequest) => {
       console.log(`[sipcall] session bye`, request)
-      this.callback.stopTracks()
+      this.emit('stopTracks')
       // 被动挂断
-      this.callback.hungup()
-      this.callback.callEnd()
+      this.emit('hungup')
+      this.emit('callEnd')
     })
 
     // 通话被取消时
     session.on('cancel', () => {
       console.log(`[sipcall] session cancel`)
-      this.callback.stopTracks()
+      this.emit('stopTracks')
       // 被动挂断
-      this.callback.hungup()
-      this.callback.callEnd()
+      this.emit('hungup')
+      this.emit('callEnd')
     });
 
     (session as SIP.ServerContext).on('failed', (request: SIP.IncomingRequest, cause: string) => {
       console.log('[sipcall debug]', request)
       const error = this.parseError(request)
-      this.callback.error(error)
+      this.emit('error', error)
     })
 
     // 有音视频流加入时
@@ -289,7 +293,7 @@ class sipphone {
         (this.mediaDom.remoteAudio as HTMLAudioElement).srcObject = remoteStream;
         (this.mediaDom.remoteAudio as HTMLAudioElement).play()
 
-        // this.RTCAnalysis({ peerConnection: pc, callbackFn: this.callback.RTCAnalysisCallback })
+        // this.RTCAnalysis({ peerConnection: pc, callbackFn: this.emit('RTCAnalysisCallback })
       }
     })
   }
@@ -382,14 +386,6 @@ class sipphone {
     return { message, messageType, reason, code }
   }
 
-  /**
-   * 设置用户配置
-   * params: {
-   *    video: true,
-   *    audio: true, 音频应该始终为true
-   *    type: 'common' 普通电话 'meeting' 会议
-   * }
-  */
   private setParamsBySessionMediaType(session: IncomingSession | OutgoingSession) {
     // 需要wsc指定媒体类型
     if (session.body) {
@@ -404,6 +400,14 @@ class sipphone {
     }
   }
 
+  /**
+   * 设置用户配置
+   * params: {
+   *    video: true,
+   *    audio: true, 音频应该始终为true
+   *    type: 'common' 普通电话 'meeting' 会议
+   * }
+  */
   private setCurrentSessionParams({ audio = true, video = false }) {
     // 设置音频
     this.currentSessionParams.audio = audio
@@ -416,76 +420,18 @@ class sipphone {
    * 全部回调
    * TODO: 做成订阅/发布
   */
-  registCallbacks() {
-    this.callback.login = function() {
-      console.log('[sipcall] login callback')
-    }
-    this.callback.registered = function() {
-      console.log('[sipcall] registered callback')
-    }
-    this.callback.unregistered = function() {
-      console.log('[sipcall] unregistered callback')
-    }
-    // 其他用户拨打进来的回调函数
-    this.callback.callIn = function() {
-      console.log('[sipcall] callIn callback')
-    }
-    // 拨出时回呼的回调
-    this.callback.callBack = function() {
-      console.log('[sipcall] callBack callback')
-    }
-    this.callback.callOut = function() {
-      console.log('[sipcall] callOut callback')
-    }
-    this.callback.hungup = () => {
-      console.log('[sipcall] hungup callback')
-    }
-    this.callback.hungupMeeting = function() {
-
-    }
-    this.callback.callEnd = () => {
+  registerDefaultEvents() {
+    this.on('callEnd', () => {
       // 通话结束的收尾工作
       this.currentSession = null
-      this.callback.RTCAnalysisCallback(null)
-    }
-    this.callback.error = (error: IErrorMsg) => {
+      this.emit('RTCAnalysisCallback', null)
+    })
+    this.on('error', (error: IErrorMsg) => {
       console.log(`[sipcall] error ${error.code}`)
-    }
-    this.callback.message = () => {
-
-    }
-    this.callback.stopTracks = () => {
+    })
+    this.on('stopTracks', () => {
       this.stopTracks()
-    }
-    this.callback.accepted = function() {
-      console.log(`[sipcall] accepted`)
-      console.log('[sipcall] accepted callback')
-    }
-    this.callback.acceptedMeeting = function() {
-
-    }
-    this.callback.hold = function() {
-      console.log('[sipcall] hold callback')
-    }
-    this.callback.unhold = function() {
-      console.log('[sipcall] unhold callback')
-    }
-    this.callback.logout = function() {
-      console.log('[sipcall] logout callback')
-    }
-    this.callback.initCallStatus = function() {
-      console.log('[sipcall] initCallStatus callback')
-    }
-    this.callback.registrationFailed = function() {
-      console.log('[sipcall] registrationFailed callback')
-    }
-    this.callback.MediaStreamCallback = function() {
-
-    }
-    // RTC分析数据回调
-    this.callback.RTCAnalysisCallback = function(params: any) {
-      console.log(params)
-    }
+    })
   }
 
   private get SessionParams() {
