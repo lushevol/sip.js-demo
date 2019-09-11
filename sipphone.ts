@@ -3,7 +3,7 @@
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:38
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-10 09:20:15
+ * @LastEditTime: 2019-09-11 10:27:47
  */
 import SIP, { Transport } from 'sip.js'
 import { ISipAddress, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
@@ -120,7 +120,7 @@ class sipphone {
     if (this.isIncomingCallFromInternal(this.currentSession)) {
       this.emit('callIn', this.currentSession)
     } else {
-      this.emit('callBack', this.currentSession)
+      this.emit('callOutBack', this.currentSession)
     }
   }
 
@@ -183,7 +183,7 @@ class sipphone {
     // 同意通话时
     session.on('accepted', (response: SIP.IncomingResponse, cause: string) => {
       console.log(`[sipcall] session accepted \n ${response} ${cause}`)
-      this.emit('accepted')
+      this.emit('accepted', { response, cause })
     })
 
     // 被拒绝时
@@ -192,17 +192,7 @@ class sipphone {
       console.log(`[sipcall] session rejected ${response} ${cause}`)
       this.emit('stopTracks')
       // 被动挂断
-      this.emit('hungup')
-      this.emit('callEnd')
-    })
-
-    // 被拒绝时
-    // Fired each time an unsuccessful final (300-699) response is received. Note: This will also emit a failed event, followed by a terminated event.
-    session.on('rejected', (response: SIP.IncomingResponse, cause: string) => {
-      console.log(`[sipcall] session rejected ${response} ${cause}`)
-      this.emit('stopTracks')
-      // 被动挂断
-      this.emit('hungup')
+      this.emit('hungup', { response, cause })
       this.emit('callEnd')
     })
 
@@ -220,7 +210,7 @@ class sipphone {
       console.log(`[sipcall] session bye`, request)
       this.emit('stopTracks')
       // 被动挂断
-      this.emit('hungup')
+      this.emit('hungup', { request })
       this.emit('callEnd')
     })
 
