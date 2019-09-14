@@ -3,7 +3,7 @@
  * @Author: lushevol
  * @Date: 2019-09-06 17:11:30
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-11 10:27:14
+ * @LastEditTime: 2019-09-14 22:11:07
  */
 import { sipphone } from "./sipphone";
 import { ISipAddress, ISipAccount, IMediaDom } from "./sipphone.declar";
@@ -49,4 +49,6 @@ SIPPHONE.on('hungup', ({ response, cause }) => {
 SIPPHONE.on('error', (error) => {
   // triggerd when error is occur while calling
 })
-UA.invite(1235)
+
+// call someone whos number is 12345
+UA.invite(12345)
