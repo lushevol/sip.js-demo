@@ -1,9 +1,9 @@
 /*
- * @Description: 
+ * @Description: Event Emitter
  * @Author: lushevol
  * @Date: 2019-09-09 09:23:21
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-09 10:30:10
+ * @LastEditTime: 2019-09-16 21:51:34
  */
 
 type EventMap = Map<string, Function[]>
