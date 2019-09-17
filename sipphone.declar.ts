@@ -1,9 +1,9 @@
 /*
- * @Description: 
+ * @Description: sipphone declaration
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:42
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-06 17:14:23
+ * @LastEditTime: 2019-09-17 22:21:06
  */
 import SIP from 'sip.js'
 

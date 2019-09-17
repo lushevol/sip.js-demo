@@ -1,9 +1,9 @@
 /*
- * @Description: 
+ * @Description: main sipphone class
  * @Author: lushevol
  * @Date: 2019-08-27 17:53:38
  * @LastEditors: lushevol
- * @LastEditTime: 2019-09-11 10:27:47
+ * @LastEditTime: 2019-09-17 22:21:22
  */
 import SIP, { Transport } from 'sip.js'
 import { ISipAddress, ISipAccount, ISessionParams, ICallbackObj, IErrorMsg, OutgoingSession, IncomingSession, IMediaDom, IModifiers } from './sipphone.declar'
