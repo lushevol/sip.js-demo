@@ -15,4 +15,3 @@
 1. 全部sip.js接口
 2. i18n
 3. 全部 session description handler 处理
-4. 母鸡
